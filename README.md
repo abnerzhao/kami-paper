@@ -1,0 +1,145 @@
+# kami-paper
+
+[中文](#中文) · [English](#english)
+
+## 中文
+
+一个纯静态的 Markdown 排版工具，可将简历、长文或一页纸内容转换为受 [Kami](https://github.com/tw93/kami) 启发的 A4 文档版式。
+
+适合需要快速生成精致文档，但不想搭建复杂文档工具链的场景。
+
+![Kami Paper demo](assets/demo.png)
+
+### 特性
+
+- Markdown 实时编辑和预览
+- Kami 风格的暖纸张排版
+- 适合简历的核心数字、时间线、项目三段式结构
+- 浏览器本地导出 PDF
+- 无构建步骤、无后端、无需账号
+
+### 使用
+
+直接在浏览器打开 `index.html`，或用任意静态服务启动当前目录。
+
+```bash
+python3 -m http.server 4174
+```
+
+然后访问：
+
+```text
+http://127.0.0.1:4174
+```
+
+### Markdown 格式
+
+以姓名和联系信息开始：
+
+```markdown
+# 你的名字
+AI / Agent 工程师 · 上海 · GitHub @name · email@example.com
+```
+
+使用 `## 核心数字` 生成指标区：
+
+```markdown
+## 核心数字
+- 8 年｜工程经验
+- 40%｜构建耗时下降
+- 12 个｜交付项目
+- 30+ 人｜跨团队协作
+```
+
+使用 `###` 生成经历或项目块：
+
+```markdown
+### 项目名称｜产品方向 · 技术方向｜角色定位
+- 角色说明
+- 关键动作
+- 量化结果
+```
+
+### 致谢
+
+文档视觉风格参考 [tw93/kami](https://github.com/tw93/kami)。
+
+PDF 导出使用本地副本：
+
+- [html2canvas](https://github.com/niklasvh/html2canvas)
+- [jsPDF](https://github.com/parallax/jsPDF)
+
+### 许可
+
+MIT
+
+## English
+
+A tiny static Markdown typesetting tool that turns resumes, long-form notes, or one-pagers into an A4 document layout inspired by [Kami](https://github.com/tw93/kami).
+
+It is designed for people who want polished documents without setting up a document toolchain.
+
+![Kami Paper demo](assets/demo.png)
+
+### Features
+
+- Live Markdown editing and preview
+- Kami-inspired warm paper layout
+- Resume-friendly metrics, timelines, and project blocks
+- Local PDF export in the browser
+- No build step, no backend, no account required
+
+### Usage
+
+Open `index.html` in a browser, or serve the directory with any static file server.
+
+```bash
+python3 -m http.server 4174
+```
+
+Then visit:
+
+```text
+http://127.0.0.1:4174
+```
+
+### Markdown Format
+
+Start with a name and contact line:
+
+```markdown
+# Your Name
+AI / Agent Engineer · Shanghai · GitHub @name · email@example.com
+```
+
+Use `## 核心数字` for metric cards:
+
+```markdown
+## 核心数字
+- 8 年｜Engineering experience
+- 40%｜Build time reduced
+- 12 个｜Projects shipped
+- 30+ 人｜Cross-team collaboration
+```
+
+Use `###` headings for experience or project blocks:
+
+```markdown
+### Project Name｜Product Area · Tech Area｜Role
+- Role summary
+- Key actions
+- Measurable impact
+```
+
+### Credits
+
+The document visual style is inspired by [tw93/kami](https://github.com/tw93/kami).
+
+PDF export uses local copies of:
+
+- [html2canvas](https://github.com/niklasvh/html2canvas)
+- [jsPDF](https://github.com/parallax/jsPDF)
+
+### License
+
+MIT

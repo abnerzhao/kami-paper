@@ -1,0 +1,1228 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f5f4ed">
+  <title>Kami Paper</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <style>
+    @font-face {
+      font-family: "TsangerJinKai02";
+      src: local("TsangerJinKai02");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "TsangerJinKai02";
+      src: local("TsangerJinKai02");
+      font-weight: 500;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --parchment: #f5f4ed;
+      --ivory: #faf9f5;
+      --border: #e8e6dc;
+      --border-soft: #e5e3d8;
+      --near-black: #141413;
+      --dark-warm: #3d3d3a;
+      --olive: #504e49;
+      --stone: #6b6a64;
+      --brand: #1b365d;
+      --brand-tint: #eef2f7;
+      --shadow: rgba(42, 39, 31, 0.12);
+      --serif: "TsangerJinKai02", "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC", "STSong", Georgia, serif;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+      margin: 0;
+      background: var(--parchment);
+      color: var(--near-black);
+    }
+
+    body {
+      font-family: var(--sans);
+      overflow-x: hidden;
+    }
+
+    button,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    .app {
+      min-height: 100vh;
+      padding: 18px clamp(14px, 3vw, 32px) 28px;
+      background:
+        linear-gradient(135deg, rgba(27, 54, 93, 0.08), transparent 34%),
+        radial-gradient(circle at top right, rgba(80, 78, 73, 0.09), transparent 26%),
+        var(--parchment);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 18px;
+      max-width: 1480px;
+      margin: 0 auto 16px;
+    }
+
+    .brand {
+      border-left: 4px solid var(--brand);
+      padding-left: 12px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: clamp(24px, 3vw, 38px);
+      font-weight: 500;
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .brand p {
+      margin: 6px 0 0;
+      color: var(--olive);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .brand a,
+    .pane-head a {
+      color: var(--brand);
+      text-decoration: none;
+    }
+
+    .brand a:hover,
+    .pane-head a:hover {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tool-button {
+      min-height: 36px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--ivory);
+      color: var(--dark-warm);
+      padding: 0 12px;
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.72) inset;
+    }
+
+    .tool-button:hover {
+      border-color: rgba(27, 54, 93, 0.28);
+    }
+
+    .tool-button.primary {
+      background: var(--brand);
+      color: var(--ivory);
+    }
+
+    .tool-button:disabled {
+      cursor: wait;
+      opacity: 0.68;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(320px, 0.82fr) minmax(500px, 1.18fr);
+      gap: clamp(14px, 2vw, 24px);
+      max-width: 1480px;
+      margin: 0 auto;
+      align-items: stretch;
+    }
+
+    .editor,
+    .preview-shell {
+      min-width: 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: rgba(250, 249, 245, 0.74);
+      box-shadow: 0 18px 48px var(--shadow);
+      overflow: hidden;
+    }
+
+    .pane-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 48px;
+      padding: 0 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--olive);
+      font-size: 13px;
+    }
+
+    .pane-head strong {
+      color: var(--near-black);
+      font-weight: 600;
+    }
+
+    textarea {
+      display: block;
+      width: 100%;
+      min-height: calc(100vh - 132px);
+      resize: vertical;
+      border: 0;
+      outline: 0;
+      padding: 18px;
+      background: #fbfaf7;
+      color: #24231f;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 14px;
+      line-height: 1.62;
+      tab-size: 2;
+    }
+
+    .preview-shell {
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.45), rgba(245, 244, 237, 0.3)),
+        rgba(250, 249, 245, 0.64);
+    }
+
+    .paper-wrap {
+      height: calc(100vh - 132px);
+      overflow: auto;
+      padding: 22px;
+    }
+
+    .paper {
+      width: min(100%, 210mm);
+      min-height: 297mm;
+      margin: 0 auto;
+      padding: 11mm 13mm;
+      background: var(--parchment);
+      box-shadow: 0 12px 40px rgba(42, 39, 31, 0.16);
+      color: var(--near-black);
+      font-family: var(--serif);
+      font-size: 9.2pt;
+      line-height: 1.42;
+      letter-spacing: 0.3pt;
+    }
+
+    .resume-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 4mm;
+      border-bottom: 0.4pt solid var(--border);
+      padding-bottom: 2.2mm;
+    }
+
+    .resume-name {
+      margin: 0;
+      font-size: 26.5pt;
+      font-weight: 500;
+      line-height: 1;
+      letter-spacing: 0.5pt;
+      white-space: nowrap;
+    }
+
+    .resume-contact {
+      text-align: right;
+      color: var(--stone);
+      font-size: 9pt;
+      line-height: 1.5;
+    }
+
+    .resume-contact strong {
+      display: block;
+      color: var(--brand);
+      font-size: 10.5pt;
+      font-weight: 500;
+    }
+
+    .resume-contact a {
+      color: var(--dark-warm);
+      text-decoration: none;
+    }
+
+    .paper h1 {
+      margin: 0 0 4mm;
+      border-bottom: 0.4pt solid var(--border);
+      padding-bottom: 1.5mm;
+      font-size: 24pt;
+      font-weight: 500;
+      line-height: 1.08;
+      letter-spacing: 0.3pt;
+    }
+
+    .paper h2,
+    .section-title {
+      display: flex;
+      align-items: baseline;
+      gap: 2mm;
+      margin: 6.5mm 0 2.6mm;
+      border-bottom: 0.4pt solid var(--border);
+      padding: 0 0 1.2mm;
+      color: var(--near-black);
+      font-size: 15pt;
+      font-weight: 500;
+      line-height: 1.25;
+    }
+
+    .paper h2 .section-sub {
+      margin-left: auto;
+      color: var(--stone);
+      font-size: 9.6pt;
+      font-weight: 400;
+      line-height: 1.3;
+      text-align: right;
+    }
+
+    .paper section:first-of-type h2 {
+      margin-top: 0;
+    }
+
+    .paper h3 {
+      display: flex;
+      align-items: baseline;
+      gap: 2mm;
+      margin: 0;
+      padding: 0;
+      border-top: 0;
+      color: var(--near-black);
+      font-size: 11pt;
+      font-weight: 500;
+      line-height: 1.28;
+    }
+
+    .paper h4 {
+      margin: 2mm 0 0.8mm;
+      color: var(--brand);
+      font-size: 9.8pt;
+      font-weight: 500;
+    }
+
+    .paper p {
+      margin: 0 0 1.8mm;
+      line-height: 1.42;
+    }
+
+    .paper a {
+      color: var(--brand);
+      text-decoration: none;
+    }
+
+    .paper strong {
+      color: var(--brand);
+      font-weight: 500;
+    }
+
+    .paper em {
+      color: var(--olive);
+      font-style: normal;
+    }
+
+    .paper code {
+      border-radius: 3px;
+      background: var(--brand-tint);
+      color: var(--brand);
+      padding: 0.1em 0.35em;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.88em;
+      letter-spacing: 0;
+    }
+
+    .paper pre {
+      margin: 2.5mm 0;
+      padding: 8pt 10pt;
+      overflow: auto;
+      background: #20232a;
+      color: #f4f1e8;
+      font-size: 8.4pt;
+      line-height: 1.45;
+      letter-spacing: 0;
+    }
+
+    .paper pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+
+    .paper ul,
+    .paper ol {
+      margin: 1mm 0 2mm 0;
+      padding-left: 5mm;
+    }
+
+    .paper li {
+      margin: 0.6mm 0;
+      padding-left: 0.5mm;
+    }
+
+    .paper blockquote {
+      margin: 2.5mm 0;
+      border-left: 1.4pt solid var(--brand);
+      padding: 1.5mm 2.5mm;
+      color: var(--olive);
+      background: transparent;
+    }
+
+    .paper hr {
+      height: 0;
+      margin: 4mm 0;
+      border: 0;
+      border-top: 0.4pt solid var(--border);
+    }
+
+    .paper table {
+      width: 100%;
+      margin: 6pt 0;
+      border-collapse: collapse;
+      font-size: 9pt;
+      break-inside: avoid;
+    }
+
+    .paper th {
+      border-bottom: 1pt solid var(--border);
+      padding: 3pt 6pt;
+      color: var(--dark-warm);
+      font-weight: 500;
+      text-align: left;
+    }
+
+    .paper td {
+      border-bottom: 0.3pt solid var(--border-soft);
+      padding: 2pt 6pt;
+      vertical-align: top;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 9mm;
+      margin: 4mm 0 5.8mm;
+    }
+
+    .metrics-section + section h2 {
+      margin-top: 0;
+    }
+
+    .metric {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.6mm;
+      min-width: 0;
+      padding: 1mm 0;
+    }
+
+    .metric-value {
+      color: var(--brand);
+      font-size: 13.5pt;
+      font-weight: 500;
+      line-height: 1;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .metric-label {
+      color: var(--olive);
+      font-size: 9pt;
+      line-height: 1.25;
+    }
+
+    .summary {
+      color: var(--near-black);
+      font-size: 9.2pt;
+      line-height: 1.42;
+    }
+
+    .project {
+      padding: 3mm 0 2.8mm;
+      border-top: 0.4pt solid var(--border-soft);
+      break-inside: avoid;
+    }
+
+    .project:first-child {
+      border-top-color: var(--border);
+    }
+
+    .project-head {
+      display: flex;
+      align-items: baseline;
+      gap: 2mm;
+      margin-bottom: 1.2mm;
+    }
+
+    .project-title {
+      font-size: 11pt;
+      font-weight: 500;
+    }
+
+    .project-kind {
+      color: var(--olive);
+      font-size: 10.6pt;
+      line-height: 1.2;
+    }
+
+    .project-meta {
+      margin-left: auto;
+      border-radius: 2pt;
+      background: var(--brand-tint);
+      color: var(--brand);
+      padding: 0.4mm 1.2mm;
+      font-size: 9pt;
+      font-weight: 500;
+      letter-spacing: 0.05pt;
+      white-space: nowrap;
+    }
+
+    .project-lines {
+      display: table;
+      width: 100%;
+    }
+
+    .project-row {
+      display: table-row;
+    }
+
+    .project-label {
+      display: table-cell;
+      width: 22mm;
+      padding: 0.3mm 0 0.5mm;
+      color: var(--brand);
+      font-size: 9pt;
+      font-weight: 500;
+      letter-spacing: 0.2pt;
+      text-transform: uppercase;
+      vertical-align: top;
+      white-space: nowrap;
+    }
+
+    .project-text {
+      display: table-cell;
+      padding: 0 0 0.55mm;
+      color: var(--near-black);
+      font-size: 9.2pt;
+      line-height: 1.42;
+      vertical-align: top;
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8mm;
+      margin: 0 0 4.5mm;
+    }
+
+    .timeline-step {
+      min-width: 0;
+    }
+
+    .timeline-head {
+      display: flex;
+      align-items: baseline;
+      gap: 2mm;
+      margin-bottom: 0.9mm;
+    }
+
+    .timeline-year {
+      color: var(--brand);
+      font-size: 11pt;
+      font-weight: 500;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .timeline-title {
+      color: var(--near-black);
+      font-size: 11pt;
+      font-weight: 500;
+      line-height: 1.2;
+    }
+
+    .timeline-body {
+      color: var(--olive);
+      font-size: 9pt;
+      line-height: 1.4;
+    }
+
+    .skill-row {
+      display: flex;
+      align-items: baseline;
+      gap: 2.5mm;
+      padding: 1.7mm 0;
+      border-bottom: 0.3pt dotted var(--border);
+    }
+
+    .skill-row:last-child {
+      border-bottom: 0;
+    }
+
+    .skill-label {
+      flex: 0 0 22mm;
+      color: var(--brand);
+      font-size: 9pt;
+      font-weight: 500;
+      line-height: 1.36;
+    }
+
+    .skill-body {
+      flex: 1;
+      color: var(--near-black);
+      font-size: 9pt;
+      line-height: 1.4;
+    }
+
+    .placeholder {
+      color: var(--stone);
+      font-size: 13pt;
+      line-height: 1.7;
+      text-align: center;
+      padding-top: 45%;
+    }
+
+    @media (max-width: 980px) {
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .toolbar {
+        justify-content: flex-start;
+      }
+
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      textarea {
+        min-height: 48vh;
+      }
+
+      .paper-wrap {
+        height: auto;
+        max-height: none;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .app {
+        padding: 14px 10px 20px;
+      }
+
+      .resume-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .resume-contact {
+        text-align: left;
+      }
+
+      .paper {
+        padding: 18px;
+        min-height: 0;
+        font-size: 13px;
+      }
+
+      .metrics {
+        grid-template-columns: 1fr 1fr;
+        gap: 4mm;
+      }
+
+      .timeline {
+        grid-template-columns: 1fr;
+        gap: 3mm;
+      }
+
+      .paper h2 .section-sub {
+        display: block;
+        margin-left: 0;
+        text-align: left;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <h1>Kami Paper</h1>
+        <p>把简历、长文或一页纸 Markdown 转成 <a href="https://github.com/tw93/kami" target="_blank" rel="noreferrer">Kami</a> 风格的暖纸张排版</p>
+      </div>
+
+      <div class="toolbar" aria-label="排版操作">
+        <button class="tool-button" id="sampleButton" type="button">示例</button>
+        <button class="tool-button primary" id="downloadPdfButton" type="button">下载 PDF</button>
+      </div>
+    </header>
+
+    <section class="workspace">
+      <div class="editor">
+        <div class="pane-head">
+          <strong>Markdown</strong>
+          <span id="wordCount">0 字</span>
+        </div>
+        <textarea id="markdownInput" spellcheck="false" aria-label="Markdown 输入"></textarea>
+      </div>
+
+      <div class="preview-shell">
+        <div class="pane-head">
+          <strong>预览</strong>
+          <span>Kami · A4</span>
+        </div>
+        <div class="paper-wrap">
+          <article class="paper" id="preview" aria-live="polite"></article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const sampleMarkdown = `# 林墨
+AI / Agent 全栈工程师 · 上海 · GitHub @linmo · linmo@example.com · 138-0000-0000
+
+## 核心数字
+- 8 年｜全栈与平台工程经验
+- 40%｜核心链路构建耗时下降
+- 12 个｜从 0 到 1 交付的产品模块
+- 30+ 人｜跨端协作与技术推进
+
+## 个人简介
+长期做产品工程与 AI 应用落地，习惯在需求不完整、链路较长的场景里把问题拆清楚。熟悉前端体验、Node 服务、数据流转、Agent 工具调用与工程化交付，关注可维护性、体验细节和真实业务结果。
+
+## 工作经历｜2018 - 至今 · AI 工具链、企业平台、文档系统
+- 2018｜平台工程｜企业级可观测平台、告警中心和报表系统建设。
+- 2022｜AI 应用｜AI 工作台、知识库检索和自动化流程编排落地。
+- 2025｜工程沉淀｜统一 Markdown 渲染、导出、组件规范和发布检查。
+
+### 星环科技｜AI 工具链 · 文档系统｜高级全栈工程师
+- 负责 AI 工作台、知识库检索、自动化流程编排等核心模块，从需求建模、前端交互到服务接口完整交付。
+- 主导 Markdown 文档渲染链路重构，统一编辑、预览、导出三个场景，首屏渲染耗时降低 **40%**。
+- 推动组件规范、错误边界、埋点和发布检查沉淀，减少重复返工，提高跨团队协作效率。
+
+### 云杉网络｜可观测平台 · 数据可视化｜前端工程师
+- 参与企业级可观测平台建设，覆盖拓扑图、告警中心、报表配置和权限系统。
+- 将多个历史页面迁移为统一设计系统，抽象表格、筛选、图表和详情布局，降低后续功能开发成本。
+
+## 项目经验
+
+### Agent 工作台｜工作流 · 工具调用｜方向主导
+- 设计多工具调用的可视化工作流，支持变量绑定、步骤回放、异常重试与结果追踪。
+- 前端使用状态机约束流程状态，服务端提供执行记录与调试事件流，方便排查复杂任务。
+- 上线后内部运营同学可独立配置 80% 的重复任务，减少工程介入。
+
+### 文档排版与 PDF 导出｜Markdown · A4 模板｜核心开发
+- 建立 Markdown 到 HTML 的结构化渲染规则，兼容简历、长文、一页纸和周报。
+- 通过模板变量、A4 版心、打印样式和视觉检查，让非设计同学也能生成可交付文档。
+
+## 技能
+- 前端：React、TypeScript、Canvas、可视化、复杂表单、性能优化
+- 后端：Node.js、PostgreSQL、Redis、任务队列、API 设计
+- AI 工程：RAG、工具调用、Prompt 版本管理、Agent 调试链路
+- 协作：需求澄清、技术方案、发布检查、跨团队推进
+
+## 教育经历
+| 学校 | 专业 | 时间 |
+| --- | --- | --- |
+| 浙江大学 | 软件工程 本科 | 2014 - 2018 |
+`;
+
+    const input = document.querySelector('#markdownInput');
+    const preview = document.querySelector('#preview');
+    const wordCount = document.querySelector('#wordCount');
+    const downloadPdfButton = document.querySelector('#downloadPdfButton');
+    const sampleButton = document.querySelector('#sampleButton');
+
+    function escapeHtml(value) {
+      return value
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+
+    function parseInline(value) {
+      let text = escapeHtml(value);
+
+      text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+      text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      text = text.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+      text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+|mailto:[^)\s]+|tel:[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer">$1</a>');
+
+      return text;
+    }
+
+    function splitMetric(item) {
+      const parts = item.split(/[｜|:：]/);
+
+      if (parts.length < 2) {
+        const match = item.match(/^([\d.,+%-]+(?:\s*[年月天人个次万亿kK]*)?)\s*(.+)$/);
+        return match ? [match[1], match[2]] : ['', item];
+      }
+
+      return [parts[0].trim(), parts.slice(1).join('｜').trim()];
+    }
+
+    function splitHeadingMeta(text) {
+      return text.split(/[｜|]/).map((part) => part.trim()).filter(Boolean);
+    }
+
+    function renderSectionTitle(text) {
+      const parts = splitHeadingMeta(text);
+      const title = parts.shift() || text;
+      const sub = parts.join(' · ');
+
+      return `<h2>${parseInline(title)}${sub ? `<span class="section-sub">${parseInline(sub)}</span>` : ''}</h2>`;
+    }
+
+    function renderProjectHead(text) {
+      const parts = splitHeadingMeta(text);
+      const title = parts.shift() || text;
+      const role = parts.length > 1 ? parts.pop() : '';
+      const kind = parts.join(' · ');
+
+      return [
+        '<div class="project-head">',
+        `<h3 class="project-title">${parseInline(title)}</h3>`,
+        kind ? `<span class="project-kind">· ${parseInline(kind)}</span>` : '',
+        role ? `<span class="project-meta">${parseInline(role)}</span>` : '',
+        '</div><div class="project-body">',
+      ].join('');
+    }
+
+    function splitLabelledItem(item) {
+      const match = item.match(/^(角色|动作|行动|结果|影响|职责|role|action|actions|impact|result|results)\s*[：:]\s*(.+)$/i);
+
+      if (!match) return null;
+
+      const labelMap = {
+        角色: 'ROLE',
+        职责: 'ROLE',
+        动作: 'ACTIONS',
+        行动: 'ACTIONS',
+        结果: 'IMPACT',
+        影响: 'IMPACT',
+        role: 'ROLE',
+        action: 'ACTIONS',
+        actions: 'ACTIONS',
+        impact: 'IMPACT',
+        result: 'IMPACT',
+        results: 'IMPACT',
+      };
+
+      return {
+        label: labelMap[match[1].toLowerCase()] || labelMap[match[1]] || match[1].toUpperCase(),
+        text: match[2],
+      };
+    }
+
+    function renderProjectRows(items) {
+      const fallbackLabels = ['ROLE', 'ACTIONS', 'IMPACT'];
+      const rows = items.map((item, index) => splitLabelledItem(item) || {
+        label: fallbackLabels[Math.min(index, fallbackLabels.length - 1)],
+        text: item,
+      });
+
+      return `<div class="project-lines">${rows.map((row) => (
+        `<div class="project-row"><div class="project-label">${row.label}</div><div class="project-text">${parseInline(row.text)}</div></div>`
+      )).join('')}</div>`;
+    }
+
+    function isTimelineList(block, sectionTitle) {
+      if (!/经历|experience|timeline|时间线/i.test(sectionTitle || '')) return false;
+      if (block.items.length < 2 || block.items.length > 4) return false;
+
+      return block.items.every((item) => /^\d{4}\s*[｜|:：]\s*.+/.test(item));
+    }
+
+    function renderTimeline(block) {
+      return `<div class="timeline">${block.items.map((item) => {
+        const [year, title = '', body = ''] = splitHeadingMeta(item);
+        return [
+          '<div class="timeline-step">',
+          '<div class="timeline-head">',
+          `<span class="timeline-year">${parseInline(year)}</span>`,
+          `<span class="timeline-title">${parseInline(title)}</span>`,
+          '</div>',
+          body ? `<div class="timeline-body">${parseInline(body)}</div>` : '',
+          '</div>',
+        ].join('');
+      }).join('')}</div>`;
+    }
+
+    function parseTable(lines, start) {
+      const header = lines[start].trim();
+      const divider = lines[start + 1] && lines[start + 1].trim();
+
+      if (!header.includes('|') || !divider || !/^\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?$/.test(divider)) {
+        return null;
+      }
+
+      const rows = [];
+      let cursor = start;
+
+      while (cursor < lines.length && lines[cursor].includes('|') && lines[cursor].trim()) {
+        rows.push(lines[cursor].trim());
+        cursor += 1;
+      }
+
+      const cells = (line) => line
+        .replace(/^\|/, '')
+        .replace(/\|$/, '')
+        .split('|')
+        .map((cell) => parseInline(cell.trim()));
+
+      const headCells = cells(rows[0]).map((cell) => `<th>${cell}</th>`).join('');
+      const bodyRows = rows.slice(2).map((row) => `<tr>${cells(row).map((cell) => `<td>${cell}</td>`).join('')}</tr>`).join('');
+
+      return {
+        html: `<table><thead><tr>${headCells}</tr></thead><tbody>${bodyRows}</tbody></table>`,
+        next: cursor,
+      };
+    }
+
+    function parseBlocks(markdown) {
+      const lines = markdown.replace(/\r\n/g, '\n').split('\n');
+      const blocks = [];
+      let cursor = 0;
+
+      while (cursor < lines.length) {
+        const line = lines[cursor];
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          cursor += 1;
+          continue;
+        }
+
+        const table = parseTable(lines, cursor);
+        if (table) {
+          blocks.push({ type: 'html', html: table.html });
+          cursor = table.next;
+          continue;
+        }
+
+        if (/^```/.test(trimmed)) {
+          const code = [];
+          cursor += 1;
+          while (cursor < lines.length && !/^```/.test(lines[cursor].trim())) {
+            code.push(lines[cursor]);
+            cursor += 1;
+          }
+          blocks.push({ type: 'html', html: `<pre><code>${escapeHtml(code.join('\n'))}</code></pre>` });
+          cursor += 1;
+          continue;
+        }
+
+        const heading = trimmed.match(/^(#{1,4})\s+(.+)$/);
+        if (heading) {
+          blocks.push({ type: 'heading', level: heading[1].length, text: heading[2].trim() });
+          cursor += 1;
+          continue;
+        }
+
+        if (/^---+$/.test(trimmed)) {
+          blocks.push({ type: 'html', html: '<hr>' });
+          cursor += 1;
+          continue;
+        }
+
+        if (/^>\s?/.test(trimmed)) {
+          const quote = [];
+          while (cursor < lines.length && /^>\s?/.test(lines[cursor].trim())) {
+            quote.push(lines[cursor].trim().replace(/^>\s?/, ''));
+            cursor += 1;
+          }
+          blocks.push({ type: 'html', html: `<blockquote>${quote.map(parseInline).join('<br>')}</blockquote>` });
+          continue;
+        }
+
+        if (/^[-*+]\s+/.test(trimmed) || /^\d+\.\s+/.test(trimmed)) {
+          const ordered = /^\d+\.\s+/.test(trimmed);
+          const items = [];
+          const pattern = ordered ? /^\d+\.\s+/ : /^[-*+]\s+/;
+
+          while (cursor < lines.length && pattern.test(lines[cursor].trim())) {
+            items.push(lines[cursor].trim().replace(pattern, ''));
+            cursor += 1;
+          }
+
+          blocks.push({ type: 'list', ordered, items });
+          continue;
+        }
+
+        const paragraph = [trimmed];
+        cursor += 1;
+        while (
+          cursor < lines.length &&
+          lines[cursor].trim() &&
+          !/^(#{1,4})\s+/.test(lines[cursor].trim()) &&
+          !/^[-*+]\s+/.test(lines[cursor].trim()) &&
+          !/^\d+\.\s+/.test(lines[cursor].trim()) &&
+          !/^>\s?/.test(lines[cursor].trim()) &&
+          !/^```/.test(lines[cursor].trim()) &&
+          !parseTable(lines, cursor)
+        ) {
+          paragraph.push(lines[cursor].trim());
+          cursor += 1;
+        }
+        blocks.push({ type: 'paragraph', text: paragraph.join(' ') });
+      }
+
+      return blocks;
+    }
+
+    function renderList(block, sectionTitle, inProject) {
+      const title = sectionTitle || '';
+
+      if (inProject) {
+        return renderProjectRows(block.items);
+      }
+
+      if (/核心数字|关键数据|亮点数据|metrics/i.test(title)) {
+        return `<div class="metrics">${block.items.slice(0, 4).map((item) => {
+          const [value, label] = splitMetric(item);
+          return `<div class="metric"><span class="metric-value">${parseInline(value)}</span><span class="metric-label">${parseInline(label)}</span></div>`;
+        }).join('')}</div>`;
+      }
+
+      if (/技能|能力|技术栈|skills/i.test(title)) {
+        return block.items.map((item) => {
+          const [label, body] = item.split(/[：:]/);
+          if (!body) return `<div class="skill-row"><div class="skill-body">${parseInline(item)}</div></div>`;
+          return `<div class="skill-row"><div class="skill-label">${parseInline(label.trim())}</div><div class="skill-body">${parseInline(body.trim())}</div></div>`;
+        }).join('');
+      }
+
+      if (isTimelineList(block, title)) {
+        return renderTimeline(block);
+      }
+
+      const tag = block.ordered ? 'ol' : 'ul';
+      return `<${tag}>${block.items.map((item) => `<li>${parseInline(item)}</li>`).join('')}</${tag}>`;
+    }
+
+    function renderMarkdown(markdown) {
+      const blocks = parseBlocks(markdown);
+      if (!blocks.length) {
+        return '<div class="placeholder">在左侧输入 Markdown，右侧会实时生成 Kami 风格排版。</div>';
+      }
+
+      const html = [];
+      let cursor = 0;
+      let currentSection = '';
+      let openProject = false;
+      let openSection = false;
+
+      if (blocks[0] && blocks[0].type === 'heading' && blocks[0].level === 1) {
+        const name = parseInline(blocks[0].text);
+        const contact = blocks[1] && blocks[1].type === 'paragraph' ? blocks[1].text : '';
+        const parts = contact.split(/[·|]/).map((part) => part.trim()).filter(Boolean);
+        const role = parts.shift() || '';
+
+        html.push('<div class="resume-header">');
+        html.push(`<h1 class="resume-name">${name}</h1>`);
+        if (contact) {
+          html.push('<div class="resume-contact">');
+          if (role) html.push(`<strong>${parseInline(role)}</strong>`);
+          html.push(parts.length ? parts.map(parseInline).join(' <span>·</span> ') : parseInline(contact));
+          html.push('</div>');
+        }
+        html.push('</div>');
+
+        cursor = contact ? 2 : 1;
+      }
+
+      function closeProject() {
+        if (openProject) {
+          html.push('</div></div>');
+          openProject = false;
+        }
+      }
+
+      function closeSection() {
+        if (openSection) {
+          html.push('</section>');
+          openSection = false;
+        }
+      }
+
+      for (; cursor < blocks.length; cursor += 1) {
+        const block = blocks[cursor];
+
+        if (block.type === 'heading') {
+          if (block.level === 1) {
+            closeProject();
+            closeSection();
+            html.push(`<h1>${parseInline(block.text)}</h1>`);
+          } else if (block.level === 2) {
+            closeProject();
+            closeSection();
+            currentSection = block.text;
+            if (/核心数字|关键数据|亮点数据|metrics/i.test(block.text)) {
+              html.push('<section class="metrics-section">');
+            } else {
+              html.push(`<section>${renderSectionTitle(block.text)}`);
+            }
+            openSection = true;
+          } else if (block.level === 3) {
+            closeProject();
+            html.push('<div class="project">');
+            html.push(renderProjectHead(block.text));
+            openProject = true;
+          } else {
+            html.push(`<h${block.level}>${parseInline(block.text)}</h${block.level}>`);
+          }
+          continue;
+        }
+
+        if (block.type === 'paragraph') {
+          const className = /个人简介|摘要|summary/i.test(currentSection) ? ' class="summary"' : '';
+          html.push(`<p${className}>${parseInline(block.text)}</p>`);
+          continue;
+        }
+
+        if (block.type === 'list') {
+          html.push(renderList(block, currentSection, openProject));
+          continue;
+        }
+
+        html.push(block.html);
+      }
+
+      closeProject();
+      closeSection();
+      return html.join('');
+    }
+
+    function updatePreview() {
+      const markdown = input.value;
+      preview.innerHTML = renderMarkdown(markdown);
+      wordCount.textContent = `${markdown.replace(/\s/g, '').length} 字`;
+    }
+
+    input.addEventListener('input', updatePreview);
+
+    sampleButton.addEventListener('click', () => {
+      input.value = sampleMarkdown;
+      updatePreview();
+    });
+
+    function getFileName() {
+      const name = preview.querySelector('.resume-name, h1')?.textContent.trim() || 'kami-document';
+      return `${name.replace(/[\\/:*?"<>|\s]+/g, '-')}.pdf`;
+    }
+
+    function loadScript(src, globalName) {
+      if (window[globalName]) return Promise.resolve();
+
+      return new Promise((resolve, reject) => {
+        const existing = document.querySelector(`script[src="${src}"]`);
+
+        if (existing) {
+          existing.addEventListener('load', () => resolve(), { once: true });
+          existing.addEventListener('error', () => reject(new Error(`load failed: ${src}`)), { once: true });
+          return;
+        }
+
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error(`load failed: ${src}`));
+        document.head.appendChild(script);
+      }).then(() => {
+        if (!window[globalName]) throw new Error(`missing global: ${globalName}`);
+      });
+    }
+
+    async function ensurePdfLibraries() {
+      await loadScript('vendor/html2canvas.min.js', 'html2canvas');
+      await loadScript('vendor/jspdf.umd.min.js', 'jspdf');
+    }
+
+    downloadPdfButton.addEventListener('click', async () => {
+      const originalText = downloadPdfButton.textContent;
+      downloadPdfButton.disabled = true;
+      downloadPdfButton.textContent = '准备中...';
+
+      try {
+        await ensurePdfLibraries();
+        downloadPdfButton.textContent = '生成中...';
+
+        const canvas = await window.html2canvas(preview, {
+          backgroundColor: '#f5f4ed',
+          scale: Math.min(2.4, window.devicePixelRatio || 2),
+          useCORS: true,
+        });
+        const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4');
+        const pageWidth = 210;
+        const pageHeight = 297;
+        const imageWidth = pageWidth;
+        const imageHeight = (canvas.height * imageWidth) / canvas.width;
+        const pageCanvas = document.createElement('canvas');
+        const pageContext = pageCanvas.getContext('2d');
+        const pagePixelHeight = Math.floor((canvas.width * pageHeight) / pageWidth);
+
+        pageCanvas.width = canvas.width;
+        pageCanvas.height = pagePixelHeight;
+
+        for (let page = 0, offset = 0; offset < canvas.height; page += 1, offset += pagePixelHeight) {
+          pageContext.clearRect(0, 0, pageCanvas.width, pageCanvas.height);
+          pageContext.fillStyle = '#f5f4ed';
+          pageContext.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+          pageContext.drawImage(
+            canvas,
+            0,
+            offset,
+            canvas.width,
+            Math.min(pagePixelHeight, canvas.height - offset),
+            0,
+            0,
+            canvas.width,
+            Math.min(pagePixelHeight, canvas.height - offset),
+          );
+
+          if (page > 0) pdf.addPage();
+          pdf.addImage(pageCanvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, imageWidth, pageHeight);
+        }
+
+        pdf.save(getFileName());
+      } catch (error) {
+        console.error(error);
+        window.alert('PDF 生成失败，请稍后重试。');
+      } finally {
+        downloadPdfButton.disabled = false;
+        downloadPdfButton.textContent = originalText;
+      }
+    });
+
+    input.value = sampleMarkdown;
+    updatePreview();
+  </script>
+</body>
+</html>
