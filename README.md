@@ -1,6 +1,6 @@
 # kami-paper
 
-[English](docs/README.en.md)
+[English](docs/README.en.md) · [在线预览](https://kami-paper.abnerzhao.com/)
 
 一个纯静态的 Markdown 排版工具，可将简历、长文或一页纸内容转换为受 [Kami](https://github.com/tw93/kami) 启发的 A4 文档版式。
 

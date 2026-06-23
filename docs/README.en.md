@@ -1,6 +1,6 @@
 # kami-paper
 
-[中文](../README.md)
+[中文](../README.md) · [Live Demo](https://kami-paper.abnerzhao.com/)
 
 A tiny static Markdown typesetting tool that turns resumes, long-form notes, or one-pagers into an A4 document layout inspired by [Kami](https://github.com/tw93/kami).
 
